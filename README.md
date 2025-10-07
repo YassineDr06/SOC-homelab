@@ -95,12 +95,13 @@ ping 192.168.1.2
 ```
 
 (werkt alleen als Windows-firewall ICMP toelaat).
-*Ref 08 → images/08_ping_test.png*
+<img width="636" height="301" alt="image" src="https://github.com/user-attachments/assets/d942d32c-ba6e-4cb6-b094-cb49b420dda3" />
+
 
 ### 5️⃣ Snapshot maken
 
 Voordat je verder gaat: VMware → **Snapshot → Take Snapshot → Baseline**.
-*Ref 09 → images/09_snapshot.png*
+
 
 ### 6️⃣ Splunk + Sysmon op Windows
 
@@ -116,7 +117,8 @@ Voordat je verder gaat: VMware → **Snapshot → Take Snapshot → Baseline**.
    disabled = 0
    ```
 5. Herstart Splunk-service en controleer of Sysmon‑logs zichtbaar zijn.
-   *Refs 10–12 → images/10_splunk_index.png, 11_inputs_conf.png, 12_sysmon_events.png*
+   <img width="1808" height="1290" alt="image" src="https://github.com/user-attachments/assets/cbade74e-93f2-4a11-aa5a-b6949770e8a0" />
+
 
 ---
 
@@ -143,7 +145,8 @@ net localgroup administrators
 ```
 
 Splunk zal Sysmon Event ID 1 (Process Create) registreren.
-*Ref 15 → images/15_splunk_process_tree.png*
+<img width="900" height="1233" alt="image" src="https://github.com/user-attachments/assets/86464162-d99b-4f0e-af1e-c6d18655c14f" />
+
 
 ---
 
@@ -155,38 +158,7 @@ Splunk zal Sysmon Event ID 1 (Process Create) registreren.
 index=endpoint EventCode=1
 | stats values(CommandLine) by Image, ParentImage, user
 ```
+<img width="2552" height="1248" alt="image" src="https://github.com/user-attachments/assets/e7928269-c299-470d-8664-08ebab1e72ae" />
 
-**Netwerkactiviteit:**
+Hier zie je dat de pdf.exe gebruikt was om Reverse shell uit te voeren
 
-```spl
-index=endpoint | stats count by dest_port, Computer
-```
-
-*Ref 14 → images/14_splunk_search_net.png*
-
----
-
-## Screenshot‑checklist
-
-1. Architectuurdiagram (01_architectuur.png)
-2. VMware installatie (02_vmware_setup.png)
-3. Windows VM (03_vmware_win_vm.png)
-4. Kali import (04_vmware_kali_import.png)
-5. LAN Segment (05_network_lansegment.png)
-6. Windows IPv4 (06_win_static_ip.png)
-7. Kali IPv4 (07_kali_static_ip.png)
-8. Ping test (08_ping_test.png)
-9. Snapshot (09_snapshot.png)
-10. Splunk + Sysmon resultaten (10–15)
-
----
-
-## Next Steps
-
-* Experimenteer met **Atomic Red Team** of **MITRE CALDERA** (alleen benign tests).
-* Breid Splunk uit met **Sigma‑regels** of **Zeek** voor netwerklogging.
-* Voeg documentatie of rapportage toe in PDF of Markdown.
-
----
-
-**Veiligheidstip:**  voer nooit echte malware uit. Alles gebeurt binnen een afgesloten, niet‑verbonden netwerk. Gebruik snapshots om je omgeving snel te herstellen.
