@@ -31,9 +31,9 @@ Sysmon event ID 1 shows the process start and event ID 3 shows the network conne
 index=endpoint Image="*Resume.pdf.exe*" OR CommandLine="*net user*"
 ```
 
-## Next step
+## Planned
 
-Rerun the scenario and add my own screenshots of the results.
+Run the scenario again with more attack techniques and document the Splunk results step by step.
 
 ## Tools
 
